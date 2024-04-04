@@ -43,6 +43,18 @@ class BurgerDetail(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = BurgerSerializer
   lookup_field = 'id'
 
+  def retrieve(self, request, *args, **kwargs):
+    instance = self.get_object()
+    serializer = self.get_serializer(instance)
+
+    happymeal_not_associated = Happymeal.objects.exclude(id__in=instance.toys.all())
+    happymeal_serializer = HappymealSerializer(happymeal_not_associated, many=True)
+
+    return Response({
+        'burgers': serializer.data,
+        'happymeal_not_associated': happymeal_serializer.data
+    })
+
 class HappymealDetail(generics.RetrieveUpdateDestroyAPIView):
   queryset = Happymeal.objects.all()
   serializer_class = HappymealSerializer
@@ -51,3 +63,17 @@ class HappymealDetail(generics.RetrieveUpdateDestroyAPIView):
 class HappymealList(generics.ListCreateAPIView):
   queryset = Happymeal.objects.all()
   serializer_class = HappymealSerializer
+
+class AddHappymealToBurger(APIView):
+  def post(self, request, burgers_id, happymeal_id):
+    burger = Burger.objects.get(id=burgers_id)
+    happymeal = Happymeal.objects.get(id=happymeal_id)
+    burger.happymeal.add(happymeal)
+    return Response({'message': f'Happymeal {happymeal.name} added to Burger {happymeal.name}'})
+  
+class RemoveHappymealFromBurger(APIView):
+  def post(self, request, burgers_id, happymeal_id):
+    burger = Burger.objects.get(id=burgers_id)
+    happymeal = Happymeal.objects.get(id=happymeal_id)
+    burger.happymeal.remove(happymeal)
+    return Response({'message': f'Happymeal {happymeal.name} removed from Burger {happymeal.name}'})

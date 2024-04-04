@@ -1,11 +1,20 @@
 from django.db import models
 from datetime import date
 # Create your models here.
+
+class Happymeal(models.Model):
+    date = models.DateField('Date the toy was made')
+    price = models.IntegerField()
+
+def __str__(self):
+    return self.name
+
 class Burger(models.Model):
     name = models.CharField(max_length = 100)
-    breed = models.CharField(max_length = 100)
+    burgertype = models.CharField(max_length = 100)
     description = models.TextField(max_length = 250)
     age = models.IntegerField()
+    happymeal= models.ManyToManyField(Happymeal)
 def __str__(self):
     return self.name
 
@@ -32,9 +41,3 @@ def __str__(self):
 class Meta:
     ordering = ['-date']
 
-class Happymeal(models.Model):
-    date = models.DateField('Date the toy was made')
-    price = models.IntegerField()
-
-def __str__(self):
-    return self.name
