@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth.models import User
 # Create your models here.
+
 
 class Happymeal(models.Model):
     date = models.DateField('Date the toy was made')
@@ -15,6 +17,7 @@ class Burger(models.Model):
     description = models.TextField(max_length = 250)
     age = models.IntegerField()
     happymeal= models.ManyToManyField(Happymeal)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 def __str__(self):
     return self.name
 
